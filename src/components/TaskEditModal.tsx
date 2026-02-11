@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Task } from '@/types';
 
 interface TaskEditModalProps {
@@ -12,6 +12,11 @@ interface TaskEditModalProps {
 
 export function TaskEditModal({ task, isOpen, onClose, onSave }: TaskEditModalProps) {
   const [editedTask, setEditedTask] = useState<Task>(task);
+
+  // Sync editedTask with the task prop when it changes
+  useEffect(() => {
+    setEditedTask(task);
+  }, [task]);
 
   if (!isOpen) return null;
 
@@ -38,7 +43,7 @@ export function TaskEditModal({ task, isOpen, onClose, onSave }: TaskEditModalPr
               type="text"
               value={editedTask.title}
               onChange={(e) => setEditedTask({ ...editedTask, title: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               placeholder="Task title"
             />
           </div>
@@ -53,7 +58,7 @@ export function TaskEditModal({ task, isOpen, onClose, onSave }: TaskEditModalPr
               value={editedTask.description}
               onChange={(e) => setEditedTask({ ...editedTask, description: e.target.value })}
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               placeholder="Task description"
             />
           </div>
@@ -67,7 +72,7 @@ export function TaskEditModal({ task, isOpen, onClose, onSave }: TaskEditModalPr
               id="type"
               value={editedTask.type}
               onChange={(e) => setEditedTask({ ...editedTask, type: e.target.value as 'story' | 'task' | 'risk' })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             >
               <option value="story">User Story</option>
               <option value="task">Task</option>
@@ -84,7 +89,7 @@ export function TaskEditModal({ task, isOpen, onClose, onSave }: TaskEditModalPr
               id="priority"
               value={editedTask.priority}
               onChange={(e) => setEditedTask({ ...editedTask, priority: e.target.value as 'high' | 'medium' | 'low' })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             >
               <option value="high">High</option>
               <option value="medium">Medium</option>
@@ -101,7 +106,7 @@ export function TaskEditModal({ task, isOpen, onClose, onSave }: TaskEditModalPr
               id="category"
               value={editedTask.category}
               onChange={(e) => setEditedTask({ ...editedTask, category: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             >
               <option value="Planning">Planning</option>
               <option value="Design">Design</option>
@@ -122,7 +127,7 @@ export function TaskEditModal({ task, isOpen, onClose, onSave }: TaskEditModalPr
               id="status"
               value={editedTask.status}
               onChange={(e) => setEditedTask({ ...editedTask, status: e.target.value as 'todo' | 'in-progress' | 'done' })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             >
               <option value="todo">To Do</option>
               <option value="in-progress">In Progress</option>
