@@ -1,65 +1,152 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { FeatureForm } from '@/components/FeatureForm';
+import { TaskList } from '@/components/TaskList';
+import { ExportPanel } from '@/components/ExportPanel';
+import { HistoryPanel } from '@/components/HistoryPanel';
+import { FeatureSpec, Task, GeneratedSpec } from '@/types';
 
 export default function Home() {
+  const [spec, setSpec] = useState<FeatureSpec | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [history, setHistory] = useState<GeneratedSpec[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load history from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('taskGeneratorHistory');
+    if (saved) {
+      try {
+        setHistory(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to load history:', e);
+      }
+    }
+  }, []);
+
+  // Save history to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('taskGeneratorHistory', JSON.stringify(history.slice(0, 5)));
+  }, [history]);
+
+  const handleGenerateTasks = async (newSpec: FeatureSpec) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/generate-tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSpec),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate tasks');
+      }
+
+      const data = await response.json();
+      setSpec(newSpec);
+      setTasks(data.tasks);
+
+      // Add to history
+      const newSpecEntry: GeneratedSpec = {
+        id: Date.now().toString(),
+        spec: newSpec,
+        tasks: data.tasks,
+        createdAt: new Date().toISOString(),
+        title: `${newSpec.goal.substring(0, 50)}...`,
+      };
+      setHistory([newSpecEntry, ...history.slice(0, 4)]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTaskUpdate = (updatedTask: Task) => {
+    setTasks(tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
+  };
+
+  const handleTaskDelete = (id: string) => {
+    setTasks(tasks.filter((t) => t.id !== id));
+  };
+
+  const handleReorderTasks = (reorderedTasks: Task[]) => {
+    setTasks(reorderedTasks);
+  };
+
+  const handleLoadSpec = (item: GeneratedSpec) => {
+    setSpec(item.spec);
+    setTasks(item.tasks);
+  };
+
+  const handleDeleteSpec = (id: string) => {
+    setHistory(history.filter((item) => item.id !== id));
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Task Generator</h1>
+          <p className="text-gray-600">Generate user stories and engineering tasks from feature ideas</p>
+        </header>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            Error: {error}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Left Column - Form */}
+          <div className="lg:col-span-1">
+            <FeatureForm onSubmit={handleGenerateTasks} loading={loading} />
+          </div>
+
+          {/* Right Column - Tasks and Export */}
+          <div className="lg:col-span-3 space-y-6">
+            {tasks.length > 0 && (
+              <>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-900">Generated Tasks ({tasks.length})</h2>
+                  <button
+                    onClick={() => {
+                      setTasks([]);
+                      setSpec(null);
+                    }}
+                    className="bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <TaskList
+                  tasks={tasks}
+                  onTaskUpdate={handleTaskUpdate}
+                  onTaskDelete={handleTaskDelete}
+                  onReorder={handleReorderTasks}
+                />
+                <ExportPanel spec={spec} tasks={tasks} />
+              </>
+            )}
+
+            {tasks.length === 0 && !spec && (
+              <div className="bg-white p-8 rounded-lg shadow-md text-center">
+                <p className="text-gray-600 text-lg">Fill out the form and generate tasks to get started</p>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        {/* History Section */}
+        {history.length > 0 && (
+          <div className="mt-8">
+            <HistoryPanel history={history} onLoadSpec={handleLoadSpec} onDeleteSpec={handleDeleteSpec} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
