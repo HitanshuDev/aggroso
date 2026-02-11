@@ -78,10 +78,15 @@ export function TaskList({ tasks, onTaskUpdate, onTaskDelete, onReorder }: TaskL
   return (
     <div className="space-y-6">
       {Object.entries(byCategory).map(([category, categoryTasks]) => (
-        <div key={category} className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div
+          key={category}
+          className="bg-white rounded-lg shadow-md overflow-hidden"
+        >
           <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">{category}</h3>
-            <p className="text-sm text-gray-600">{categoryTasks.length} tasks</p>
+            <p className="text-sm text-gray-600">
+              {categoryTasks.length} tasks
+            </p>
           </div>
           <div className="divide-y">
             {categoryTasks.map((task) => (
@@ -95,13 +100,21 @@ export function TaskList({ tasks, onTaskUpdate, onTaskDelete, onReorder }: TaskL
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">{task.title}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{task.description}</p>
+                    <h4 className="font-semibold text-gray-900">
+                      {task.title}
+                    </h4>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {task.description}
+                    </p>
                     <div className="flex gap-2 mt-3">
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getTypeColor(task.type)}`}>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${getTypeColor(task.type)}`}
+                      >
                         {task.type}
                       </span>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(task.priority)}`}>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(task.priority)}`}
+                      >
                         {task.priority}
                       </span>
                     </div>
@@ -111,15 +124,25 @@ export function TaskList({ tasks, onTaskUpdate, onTaskDelete, onReorder }: TaskL
                     onChange={(e) =>
                       onTaskUpdate({
                         ...task,
-                        status: e.target.value as 'todo' | 'in-progress' | 'done',
+                        status: e.target.value as
+                          | "todo"
+                          | "in-progress"
+                          | "done",
                       })
                     }
-                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                    className={`px-3 py-1 border rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 ${
+                      task.status === "todo"
+                        ? "bg-gray-100 text-gray-700 border-gray-300"
+                        : task.status === "in-progress"
+                          ? "bg-yellow-100 text-yellow-700 border-yellow-300"
+                          : "bg-green-100 text-green-700 border-green-300"
+                    }`}
                   >
                     <option value="todo">To Do</option>
                     <option value="in-progress">In Progress</option>
                     <option value="done">Done</option>
                   </select>
+
                   <button
                     onClick={() => onTaskDelete(task.id)}
                     className="text-red-600 hover:text-red-800 font-semibold text-sm"
