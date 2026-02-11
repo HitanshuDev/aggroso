@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Task } from '@/types';
+import { TaskEditModal } from './TaskEditModal';
 
 interface TaskListProps {
   tasks: Task[];
@@ -12,6 +13,8 @@ interface TaskListProps {
 
 export function TaskList({ tasks, onTaskUpdate, onTaskDelete, onReorder }: TaskListProps) {
   const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const byCategory = tasks.reduce(
     (acc, task) => {
@@ -73,6 +76,17 @@ export function TaskList({ tasks, onTaskUpdate, onTaskDelete, onReorder }: TaskL
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleEditClick = (task: Task) => {
+    setEditingTask(task);
+    setEditingTaskId(task.id);
+  };
+
+  const handleEditSave = (updatedTask: Task) => {
+    onTaskUpdate(updatedTask);
+    setEditingTaskId(null);
+    setEditingTask(null);
   };
 
   return (
@@ -144,8 +158,15 @@ export function TaskList({ tasks, onTaskUpdate, onTaskDelete, onReorder }: TaskL
                   </select>
 
                   <button
+                    onClick={() => handleEditClick(task)}
+                    className="text-blue-600 hover:text-blue-800 font-semibold text-sm px-2 py-1 rounded hover:bg-blue-50 transition"
+                  >
+                    Edit
+                  </button>
+
+                  <button
                     onClick={() => onTaskDelete(task.id)}
-                    className="text-red-600 hover:text-red-800 font-semibold text-sm"
+                    className="text-red-600 hover:text-red-800 font-semibold text-sm px-2 py-1 rounded hover:bg-red-50 transition"
                   >
                     Delete
                   </button>
@@ -155,6 +176,18 @@ export function TaskList({ tasks, onTaskUpdate, onTaskDelete, onReorder }: TaskL
           </div>
         </div>
       ))}
+
+      {editingTask && (
+        <TaskEditModal
+          task={editingTask}
+          isOpen={editingTaskId !== null}
+          onClose={() => {
+            setEditingTaskId(null);
+            setEditingTask(null);
+          }}
+          onSave={handleEditSave}
+        />
+      )}
     </div>
   );
 }
