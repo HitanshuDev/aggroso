@@ -23,23 +23,31 @@ Aggroso is an AI-powered task generation tool that helps product managers and en
    - Creates prioritized, categorized tasks ready for implementation planning
    - **File:** `src/api/generate-tasks/route.ts` - API endpoint that calls OpenAI
 
-### What Was NOT AI-Generated 🧠
+### What Was AI-Generated 🤖
 
-The following components were developed without AI assistance:
+1. **Architecture & System Design** - Frontend-only backend structure with Next.js API routes
+2. **LLM Prompt Engineering** - Core task generation prompt with structured output
+3. **JSON Schema Design** - Data structures for user stories, tasks, and risks
+4. **Drag-and-Drop Implementation** - Native HTML drag event handling logic
+5. **Health Check Endpoint** - API route for system diagnostics and status monitoring
+6. **Error Handling Patterns** - Structured error responses and input validation
+7. **Markdown Export Logic** - Task-to-markdown conversion with proper formatting
+8. **Input Validation UX** - Form validation patterns and inline error display
+9. **Next.js Metadata/SEO** - Proper metadata configuration for SaaS app
 
-1. **Project Architecture & Structure** - Designed based on Next.js best practices
-2. **React Component Layout** - Custom Tailwind CSS styling and component hierarchy
-3. **State Management** - React hooks implementation (useState, useEffect)
-4. **Type Definitions** - TypeScript interfaces in `src/types/index.ts`
-5. **UI/UX Design** - Form layout, task display, and interactive components
-6. **Error Handling** - Input validation and error recovery logic
-7. **LocalStorage Integration** - History persistence implementation
-8. **Export Functionality** - CSV and JSON export logic
-9. **Health Check System** - API endpoint for system diagnostics
+### What Was NOT AI-Generated (Self-Implemented) 🧠
+
+1. **Component-Level Styling** - Custom Tailwind CSS implementation and responsive design
+2. **React State Management** - Custom hooks usage (useState, useEffect) patterns
+3. **localStorage Implementation** - History persistence and JSON parsing logic
+4. **UI/UX Polish** - Visual design, animations, and user experience refinements
+5. **Testing & Debugging** - Manual testing and error troubleshooting
+6. **Project Structure Organization** - File organization and folder hierarchy
+7. **Documentation** - README, API docs, and code comments
 
 ### Prompts Used for Development
 
-See `PROMPTS_USED.md` for specific prompts and their contexts.
+See `PROMPTS_USED.md` for the complete list of 10 AI prompts with detailed context and explanations.
 
 ## Cost Considerations
 

@@ -87,7 +87,9 @@ export function FeatureForm({ onSubmit, loading }: FeatureFormProps) {
       {/* Validation Errors Summary */}
       {errors.length > 0 && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-          <p className="text-sm font-semibold text-red-800 mb-2">Please fix the following:</p>
+          <p className="text-sm font-semibold text-red-800 mb-2">
+            Please fix the following:
+          </p>
           <ul className="space-y-1">
             {errors.map((error) => (
               <li key={error.field} className="text-sm text-red-700">
@@ -113,13 +115,13 @@ export function FeatureForm({ onSubmit, loading }: FeatureFormProps) {
           value={goal}
           onChange={(e) => {
             setGoal(e.target.value.slice(0, 500));
-            setErrors(errors.filter((e) => e.field !== 'goal'));
+            setErrors(errors.filter((e) => e.field !== "goal"));
           }}
           placeholder="e.g., Allow users to upload and share photos with real-time collaboration"
-          className={`w-full px-4 py-2 border placeholder-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
-            hasError('goal')
-              ? 'border-red-400 focus:ring-red-500'
-              : 'border-gray-300'
+          className={`w-full px-4 text-gray-600 py-2 border placeholder-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
+            hasError("goal")
+              ? "border-red-400 focus:ring-red-500"
+              : "border-gray-300"
           }`}
           rows={3}
         />
@@ -140,13 +142,13 @@ export function FeatureForm({ onSubmit, loading }: FeatureFormProps) {
           value={users}
           onChange={(e) => {
             setUsers(e.target.value.slice(0, 500));
-            setErrors(errors.filter((e) => e.field !== 'users'));
+            setErrors(errors.filter((e) => e.field !== "users"));
           }}
           placeholder="e.g., Professional photographers, creative teams, social media influencers"
-          className={`w-full px-4 py-2 placeholder-gray-300 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
-            hasError('users')
-              ? 'border-red-400 focus:ring-red-500'
-              : 'border-gray-300'
+          className={`w-full px-4 text-gray-600 py-2 placeholder-gray-300 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
+            hasError("users")
+              ? "border-red-400 focus:ring-red-500"
+              : "border-gray-300"
           }`}
           rows={3}
         />
@@ -160,20 +162,22 @@ export function FeatureForm({ onSubmit, loading }: FeatureFormProps) {
           >
             Constraints & Requirements <span className="text-red-500">*</span>
           </label>
-          <span className="text-xs text-gray-500">{constraints.length} / 500</span>
+          <span className="text-xs text-gray-500">
+            {constraints.length} / 500
+          </span>
         </div>
         <textarea
           id="constraints"
           value={constraints}
           onChange={(e) => {
             setConstraints(e.target.value.slice(0, 500));
-            setErrors(errors.filter((e) => e.field !== 'constraints'));
+            setErrors(errors.filter((e) => e.field !== "constraints"));
           }}
           placeholder="e.g., Must be compatible with iOS/Android, support 100MB files, work offline"
-          className={`w-full px-4 py-2 placeholder-gray-300 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
-            hasError('constraints')
-              ? 'border-red-400 focus:ring-red-500'
-              : 'border-gray-300'
+          className={`w-full px-4 py-2 text-gray-600 placeholder-gray-300 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
+            hasError("constraints")
+              ? "border-red-400 focus:ring-red-500"
+              : "border-gray-300"
           }`}
           rows={3}
         />
@@ -190,7 +194,7 @@ export function FeatureForm({ onSubmit, loading }: FeatureFormProps) {
           id="template"
           value={template}
           onChange={(e) => setTemplate(e.target.value || undefined)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 text-gray-600 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="">Choose a template...</option>
           {templates.map((t) => (
@@ -206,7 +210,7 @@ export function FeatureForm({ onSubmit, loading }: FeatureFormProps) {
         disabled={loading}
         className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
       >
-        {loading ? '⏳ Generating Tasks...' : '✨ Generate Tasks'}
+        {loading ? "⏳ Generating Tasks..." : "✨ Generate Tasks"}
       </button>
     </form>
   );
