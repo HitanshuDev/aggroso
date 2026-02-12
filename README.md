@@ -9,13 +9,14 @@ Transform feature ideas into actionable user stories and engineering tasks in se
 
 ## ✨ Features
 
-- **🤖 AI-Powered Task Generation** - Generate comprehensive user stories and engineering tasks from feature descriptions
+- **🤖 AI-Powered Task Generation** - Generate comprehensive user stories and engineering tasks from feature descriptions (powered by OpenAI)
 - **📋 Smart Task Organization** - Tasks automatically categorized by type (Frontend, Backend, Design, QA, Planning, Risk)
 - **🎯 Priority & Status Management** - Assign priorities (High/Medium/Low) and track status (To Do/In Progress/Done)
-- **📤 Multiple Export Formats** - Export as Markdown or plain text with copy-to-clipboard or download
+- **📤 Multiple Export Formats** - Export as JSON with copy-to-clipboard or download options
 - **📚 History Tracking** - Save and quickly recall your last 5 generated specifications
 - **🎨 Template Support** - Pre-built templates for Web Apps, Mobile Apps, Internal Tools, and APIs
-- **🔄 Drag-and-Drop Reordering** - Intuitive interface to reorganize tasks
+- **✅ Input Validation** - Smart validation with helpful error messages and character limits
+- **🏥 System Health Checks** - Real-time status page monitoring API, OpenAI connection, and local storage
 - **💾 Persistent Storage** - Auto-save specs to browser localStorage
 
 ## 🛠 Tech Stack
@@ -61,30 +62,40 @@ Visit [http://localhost:3000](http://localhost:3000) to see the app.
 ## 💻 How to Use
 
 1. **Fill the Form**
-   - Enter your feature goal
-   - Describe target users
-   - List constraints and requirements
+   - Enter your feature goal (min 10 characters)
+   - Describe target users (min 10 characters)
+   - List constraints and requirements (min 10 characters)
    - Optionally select a template
 
 2. **Generate Tasks**
    - Click "Generate Tasks"
    - AI generates user stories, engineering tasks, and identifies risks
+   - If OpenAI API is not configured, mock data is used
 
 3. **Manage Tasks**
-   - Drag to reorder tasks
-   - Click status dropdown to change (To Do → In Progress → Done)
+   - Click edit icon to modify task details
+   - Change status dropdown to update progress (To Do → In Progress → Done)
    - Delete tasks you don't need
-   - View tasks organized by category
+   - View tasks organized by category and priority
 
 4. **Export & Share**
-   - Copy as Markdown or plain text with clipboard buttons
-   - Download as `.md` or `.txt` file
-   - Share formatted specs with your team
+   - Copy as JSON with clipboard button
+   - Download as `.json` file
+   - Share with your team
 
 5. **Access History**
    - Click "Load" to restore previous specs
    - Click "Delete" to remove from history
    - Each spec shows task count and creation time
+
+## 🏥 System Status
+
+Visit [http://localhost:3000/status](http://localhost:3000/status) to check:
+- **API Server** - Whether the app is responding normally
+- **OpenAI Connection** - Whether the API key is valid and connected
+- **Local Storage** - Whether browser storage is available for persistence
+
+The status page auto-refreshes every 30 seconds.
 
 ## 📂 Project Structure
 
@@ -92,27 +103,62 @@ Visit [http://localhost:3000](http://localhost:3000) to see the app.
 src/
 ├── app/
 │   ├── api/
-│   │   └── generate-tasks/
-│   │       └── route.ts          # API endpoint for task generation
+│   │   ├── generate-tasks/
+│   │   │   └── route.ts          # API endpoint for task generation
+│   │   └── health/
+│   │       └── route.ts          # Health check endpoint
+│   ├── status/
+│   │   └── page.tsx              # System health status page
 │   ├── layout.tsx                # Root layout
 │   ├── globals.css               # Global styles
-│   ├── page.tsx                  # Main page component
+│   ├── page.tsx                  # Main home page
 │   └── favicon.ico
 ├── components/
-│   ├── FeatureForm.tsx           # Input form component
+│   ├── FeatureForm.tsx           # Input form with validation
 │   ├── TaskList.tsx              # Task display & management
 │   ├── ExportPanel.tsx           # Export options
-│   └── HistoryPanel.tsx          # History viewer
+│   ├── HistoryPanel.tsx          # History viewer
+│   └── TaskEditModal.tsx         # Task editing modal
 ├── lib/
 │   └── taskGenerator.ts          # AI task generation logic
 ├── types/
 │   └── index.ts                  # TypeScript interfaces
+├── README.md                      # This file
+├── AI_NOTES.md                    # AI usage documentation
+├── ABOUTME.md                     # Author information
+├── PROMPTS_USED.md               # AI prompts used in development
 ├── .env.example                  # Environment variables template
 ├── .env.local                    # Environment variables (git ignored)
 └── vercel.json                   # Vercel configuration
 ```
 
 ## 🔌 API Documentation
+
+### GET `/api/health`
+
+Checks the health of all system components.
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "timestamp": "2026-02-12T10:30:00Z",
+  "checks": {
+    "api": {
+      "status": true,
+      "message": "API responding normally"
+    },
+    "openai": {
+      "status": true,
+      "message": "Connected"
+    },
+    "database": {
+      "status": true,
+      "message": "Local storage available"
+    }
+  }
+}
+```
 
 ### POST `/api/generate-tasks`
 
@@ -205,4 +251,11 @@ npm run build
 # Start production server
 npm run start
 ```
+
+## 📖 Documentation
+
+- **[README.md](README.md)** - Project overview, setup, and usage
+- **[AI_NOTES.md](AI_NOTES.md)** - Details about AI integration, LLM provider, and what was/wasn't AI-generated
+- **[ABOUTME.md](ABOUTME.md)** - Author information and background
+- **[PROMPTS_USED.md](PROMPTS_USED.md)** - Record of AI prompts used during development
 
