@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 interface HealthStatus {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: "healthy" | "degraded" | "unhealthy";
   timestamp: string;
   checks: {
     api: { status: boolean; message: string };
@@ -14,39 +14,56 @@ export async function GET(): Promise<NextResponse<HealthStatus>> {
   const timestamp = new Date().toISOString();
   const openaiKey = process.env.OPENAI_API_KEY;
 
-  // Check OpenAI API connectivity
+  // API check (if this route responds, API is up)
+  const apiStatus = true;
+  const apiMessage = "API responding normally";
+
+  // OpenAI check
   let openaiStatus = false;
-  let openaiMessage = 'Not configured';
+  let openaiMessage = "Not configured";
 
   if (openaiKey) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
     try {
-      const response = await fetch('https://api.openai.com/v1/models', {
-        method: 'GET',
+      const response = await fetch("https://api.openai.com/v1/models", {
+        method: "GET",
         headers: {
-          'Authorization': `Bearer ${openaiKey}`,
+          Authorization: `Bearer ${openaiKey}`,
         },
-        timeout: 5000,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+
       openaiStatus = response.ok;
-      openaiMessage = response.ok ? 'Connected' : `Error: ${response.status}`;
+      openaiMessage = response.ok ? "Connected" : `Error: ${response.status}`;
     } catch (error) {
       openaiStatus = false;
-      openaiMessage = `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      openaiMessage =
+        error instanceof Error && error.name === "AbortError"
+          ? "Timeout"
+          : "Connection failed";
     }
   }
 
-  // API status (always true if we're responding)
-  const apiStatus = true;
-  const apiMessage = 'API responding normally';
-
-  // Database status (localStorage is always available in browser context)
-  // For API routes, we just report it as available
+  // Database check (since you're using localStorage client-side)
   const databaseStatus = true;
-  const databaseMessage = 'Local storage available';
+  const databaseMessage = "Client-side storage enabled";
 
   // Determine overall status
   const allHealthy = apiStatus && openaiStatus && databaseStatus;
-  const overallStatus = allHealthy ? 'healthy' : !openaiStatus ? 'degraded' : 'unhealthy';
+
+  let overallStatus: "healthy" | "degraded" | "unhealthy";
+
+  if (allHealthy) {
+    overallStatus = "healthy";
+  } else if (!openaiStatus) {
+    overallStatus = "degraded";
+  } else {
+    overallStatus = "unhealthy";
+  }
 
   const healthStatus: HealthStatus = {
     status: overallStatus,
